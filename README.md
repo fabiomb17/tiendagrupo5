@@ -1,11 +1,11 @@
 # MiTienda Grupo 5 UAPA - Sistema POO
 
-Sistema de tienda en línea desarrollado con **Programación Orientada a Objetos (POO)** usando PHP, MySQL, JavaScript y Bootstrap.
+Sistema de tienda en línea desarrollado con **Programación Orientada a Objetos (POO)** usando PHP, MariaDB, JavaScript y Bootstrap.
 
 ## 🚀 Características
 
 - **Arquitectura POO**: Modelos separados para Productos, Usuarios, Carrito y Órdenes
-- **Base de datos MySQL**: Conexión separada del código usando patrón Singleton
+- **Base de datos MariaDB**: Conexión separada del código usando patrón Singleton
 - **API REST**: Endpoints para todas las operaciones
 - **Autenticación**: Sistema de login/registro con roles (usuario/admin)
 - **Carrito de compras**: Gestión completa del carrito con persistencia en BD
@@ -15,7 +15,7 @@ Sistema de tienda en línea desarrollado con **Programación Orientada a Objetos
 ## 📋 Requisitos del Sistema
 
 - **PHP 7.4** o superior
-- **MySQL 5.7** o superior (o MariaDB)
+- **MariaDB 5.7** o superior
 - **Servidor web** (Apache/Nginx)
 - **Extensiones PHP**:
   - PDO
@@ -138,7 +138,7 @@ tiendagrupo5/
 ## 🐛 Troubleshooting
 
 ### Error de conexión a BD:
-1. Verificar que MySQL esté ejecutándose
+1. Verificar que MariaDB esté ejecutándose
 2. Comprobar credenciales en `config/Database.php`
 3. Asegurar que la BD `tienda_grupo5` existe
 
