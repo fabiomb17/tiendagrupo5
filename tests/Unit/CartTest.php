@@ -1,10 +1,9 @@
 <?php
 
 namespace Tests\Unit;
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Tests\Support\BaseTestCase;
-
-require_once __DIR__ . '/../../models/Cart.php';
 
 class CartTest extends BaseTestCase
 {

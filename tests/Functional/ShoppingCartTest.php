@@ -2,6 +2,8 @@
 
 namespace Tests\Functional;
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
 use Tests\Support\BaseTestCase;
 
 class ShoppingCartTest extends BaseTestCase

@@ -2,6 +2,9 @@
 
 namespace Tests\Integration;
 
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+
 use Tests\Support\BaseTestCase;
 
 require_once __DIR__ . '/../../controllers/ProductController.php';
