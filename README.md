@@ -26,7 +26,7 @@ Sistema de tienda en línea desarrollado con **Programación Orientada a Objetos
 
 ### 1. Clonar o descargar el proyecto
 ```bash
-git clone [url-del-repositorio]
+git clone https://github.com/fabiomb17/tiendagrupo5.git
 # o descargar y extraer el ZIP
 ```
 
