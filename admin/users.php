@@ -29,7 +29,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 $menu = 1;
 
 ?>
-<?= include 'menu.php'; ?>
+<?php include 'menu.php'; ?>
 
 <div class="container">
     <!-- Mensajes -->

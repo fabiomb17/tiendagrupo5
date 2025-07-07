@@ -53,13 +53,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $updated = $productModel->update($id, $name, $price, $category, $image, $description);
         
         if ($updated) {
-            $_SESSION['success'] = "Producto '{$name}' actualizado exitosamente";
+            $message = "Producto '{$name}' actualizado exitosamente";
+            $_SESSION['success'] = $message;
+            
+            // Si es una solicitud AJAX, devolver JSON
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'message' => $message]);
+                exit;
+            }
         } else {
             throw new Exception("No se pudo actualizar el producto");
         }
         
     } catch (Exception $e) {
-        $_SESSION['error'] = $e->getMessage();
+        $error = $e->getMessage();
+        $_SESSION['error'] = $error;
+        
+        // Si es una solicitud AJAX, devolver JSON
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => $error]);
+            exit;
+        }
     }
 }
 

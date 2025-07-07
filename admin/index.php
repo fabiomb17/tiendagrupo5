@@ -32,7 +32,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 $menu = 2;
 ?>
 
-<?= include 'menu.php'; ?>
+<?php include 'menu.php'; ?>
 
 <div class="container">
     <?php if ($success): ?>
@@ -50,7 +50,7 @@ $menu = 2;
     <?php endif; ?>
     
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
                     <h4><i class="fas fa-plus-circle me-2"></i>Registrar Producto</h4>
@@ -93,7 +93,7 @@ $menu = 2;
             </div>
         </div>
         
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
                     <h4><i class="fas fa-list me-2"></i>Productos Registrados</h4>
@@ -106,7 +106,7 @@ $menu = 2;
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-bordered table-hover" id="productsTable">
                                 <thead class="table-dark">
                                     <tr>
                                         <th>ID</th>
@@ -212,6 +212,83 @@ function editProduct(id, name, price, category, image, description = '') {
     
     var modal = new bootstrap.Modal(document.getElementById('editModal'));
     modal.show();
+}
+
+// Manejar el envío del formulario de edición
+document.getElementById('editForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('edit_product.php', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Cerrar el modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+        modal.hide();
+        
+        if (data.success) {
+            // Actualizar la fila en la tabla
+            const productId = formData.get('id');
+            const productName = formData.get('name');
+            const productPrice = parseFloat(formData.get('price'));
+            const productCategory = formData.get('category');
+            const productImage = formData.get('image');
+            const productDescription = formData.get('description') || '';
+            
+            updateProductRow(productId, productName, productPrice, productCategory, productImage, productDescription);
+            
+            // Mostrar mensaje de éxito
+            showNotification(data.message, 'success');
+        } else {
+            // Mostrar mensaje de error
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error al actualizar el producto', 'error');
+    });
+});
+
+function updateProductRow(id, name, price, category, image, description) {
+    // Encontrar la fila del producto
+    const rows = document.querySelectorAll('#productsTable tbody tr');
+    rows.forEach(row => {
+        const firstCell = row.querySelector('td:first-child');
+        if (firstCell && firstCell.textContent.trim() == id) {
+            // Mapear categorías a español
+            const categoryMap = {
+                'electronics': 'Electrónicos',
+                'clothing': 'Ropa',
+                'home': 'Hogar'
+            };
+            
+            // Actualizar las celdas de la fila
+            row.querySelector('td:nth-child(2)').textContent = name;
+            row.querySelector('td:nth-child(3)').textContent = 'DOP ' + price.toFixed(2);
+            row.querySelector('td:nth-child(4) .badge').textContent = categoryMap[category] || category;
+            
+            // Actualizar el botón de editar con los nuevos datos
+            const editButton = row.querySelector('.btn-warning');
+            if (editButton) {
+                // Escapar comillas simples para JavaScript
+                const escapedName = name.replace(/'/g, "\\'");
+                const escapedImage = image.replace(/'/g, "\\'");
+                const escapedDescription = description.replace(/'/g, "\\'");
+                
+                editButton.setAttribute('onclick', 
+                    `editProduct(${id}, '${escapedName}', ${price}, '${category}', '${escapedImage}', '${escapedDescription}')`
+                );
+            }
+        }
+    });
 }
 
 function deleteProduct(id) {

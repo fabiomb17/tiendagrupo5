@@ -164,7 +164,7 @@ Este proyecto es para fines educativos - Universidad Abierta Para Adultos (UAPA)
 
 ## 👥 Equipo - Grupo 5
 
-- Fabio Muñoz - 100069637
+- FABIO MUÑOZ B - 100069637
 - EDWIN MUÑOZ – 100068274 
 - EDISON RAFAEL MERCEDES – 100069673 
 - YERNISON NUÑEZ DE JESÚS – 100063221 
