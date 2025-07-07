@@ -1,2 +1,21 @@
 /vendor
 composer.lock
+
+# Archivos de pruebas y cobertura
+/coverage
+/.phpunit.result.cache
+/tests/_output
+
+# Archivos de configuración específicos del entorno
+.env
+.env.local
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Archivos de base de datos
+*.sqlite
