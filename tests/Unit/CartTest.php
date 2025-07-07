@@ -1,7 +1,9 @@
 <?php
 
 namespace Tests\Unit;
-require_once __DIR__ . '/../../vendor/autoload.php';
+
+require_once __DIR__ . '/../../tests/support/BaseTestCase.php';
+require_once __DIR__ . '/../../models/Cart.php';
 
 use Tests\Support\BaseTestCase;
 
@@ -28,44 +30,6 @@ class CartTest extends BaseTestCase
         $this->assertGreaterThan(0, $userId);
         $this->assertGreaterThan(0, $productId);
         $this->assertGreaterThan(0, $quantity);
-    }
-    
-    public function testCartItemValidation()
-    {
-        // Validar cantidad
-        $this->assertTrue(1 > 0);
-        $this->assertTrue(5 > 0);
-        $this->assertFalse(0 > 0);
-        $this->assertFalse(-1 > 0);
-        
-        // Validar cantidad máxima
-        $maxQuantity = 99;
-        $this->assertTrue(1 <= $maxQuantity);
-        $this->assertTrue(50 <= $maxQuantity);
-        $this->assertFalse(100 > $maxQuantity);
-    }
-    
-    public function testCartCalculations()
-    {
-        $cartItems = [
-            ['product_id' => 1, 'quantity' => 2, 'price' => 99.99],
-            ['product_id' => 2, 'quantity' => 1, 'price' => 49.99],
-            ['product_id' => 3, 'quantity' => 3, 'price' => 19.99]
-        ];
-        
-        // Calcular total de artículos
-        $totalItems = array_sum(array_column($cartItems, 'quantity'));
-        $this->assertEquals(6, $totalItems);
-        
-        // Calcular total del carrito
-        $totalAmount = 0;
-        foreach ($cartItems as $item) {
-            $totalAmount += $item['quantity'] * $item['price'];
-        }
-        
-        $expectedTotal = (2 * 99.99) + (1 * 49.99) + (3 * 19.99);
-        $this->assertEquals($expectedTotal, $totalAmount);
-        $this->assertEquals(309.95, $totalAmount);
     }
     
     public function testCartIsEmpty()

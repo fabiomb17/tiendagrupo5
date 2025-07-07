@@ -2,11 +2,10 @@
 
 namespace Tests\Unit;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../tests/support/BaseTestCase.php';
+require_once __DIR__ . '/../../models/Product.php';
 
 use Tests\Support\BaseTestCase;
-
-require_once __DIR__ . '/../../models/Product.php';
 
 class ProductTest extends BaseTestCase
 {

@@ -2,12 +2,10 @@
 
 namespace Tests\Integration;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-
+require_once __DIR__ . '/../../tests/support/BaseTestCase.php';
+require_once __DIR__ . '/../../controllers/ProductController.php';
 
 use Tests\Support\BaseTestCase;
-
-require_once __DIR__ . '/../../controllers/ProductController.php';
 
 class ProductControllerTest extends BaseTestCase
 {

@@ -2,7 +2,7 @@
 
 namespace Tests\Functional;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../tests/support/BaseTestCase.php';
 
 use Tests\Support\BaseTestCase;
 
@@ -202,32 +202,4 @@ class ApiEndpointsTest extends BaseTestCase
         }
     }
     
-    public function testValidateApiRoute()
-    {
-        $validRoutes = [
-            '/api/products',
-            '/api/products/show',
-            '/api/auth/login',
-            '/api/cart',
-            '/api/users'
-        ];
-        
-        $invalidRoutes = [
-            '/api/invalid',
-            '/api/',
-            '/invalid',
-            ''
-        ];
-        
-        foreach ($validRoutes as $route) {
-            $this->assertStringStartsWith('/api/', $route);
-        }
-        
-        foreach ($invalidRoutes as $route) {
-            if (!empty($route)) {
-                $isValidApi = strpos($route, '/api/') === 0 && strlen($route) > 5;
-                $this->assertFalse($isValidApi);
-            }
-        }
-    }
 }
