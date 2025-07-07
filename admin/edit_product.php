@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $userModel = new User();
 if (!$userModel->isAdmin($_SESSION['user_id'])) {
-    header('Location: ../index.html');
+    header('Location: ../');
     exit;
 }
 
@@ -79,6 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-header('Location: index.php');
+header('Location: products.php');
 exit;
 ?>

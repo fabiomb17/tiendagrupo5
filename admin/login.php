@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         
                         <div class="text-center mt-3">
-                            <a href="../index.html" class="btn btn-outline-secondary btn-sm">
+                            <a href="../" class="btn btn-outline-secondary btn-sm">
                                 <i class="fas fa-arrow-left me-2"></i>Volver a la tienda
                             </a>
                         </div>
@@ -145,22 +145,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-                        </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                    </form>
-                    <div class="mt-3 text-center">
-                        <a href="register_user.php">Registrar usuario</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 </html>

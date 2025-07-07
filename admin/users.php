@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $userModel = new User();
 if (!$userModel->isAdmin($_SESSION['user_id'])) {
-    header('Location: ../index.html');
+    header('Location: ../');
     exit;
 }
 

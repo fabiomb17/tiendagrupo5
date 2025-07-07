@@ -3,9 +3,15 @@
 if ($menu == 1) {
     $botonProductoActivo = 'btn btn-outline-primary';
     $botonUsuariosActivo = 'btn btn-primary';
+    $botondashboardActivo = 'btn btn-outline-primary';
+}elseif ($menu == 2) {
+    $botonProductoActivo = 'btn btn-outline-primary';
+    $botonUsuariosActivo = 'btn btn-outline-primary';
+    $botondashboardActivo = 'btn btn-primary';
 }else{
     $botonProductoActivo = 'btn btn-primary';
     $botonUsuariosActivo = 'btn btn-outline-primary';
+    $botondashboardActivo = 'btn btn-outline-primary';
 }
 
 ?>
@@ -20,9 +26,12 @@ if ($menu == 1) {
 <body class="bg-light">
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="fas fa-tools me-2"></i>Admin Portal</a>
+        <a class="navbar-brand" href="/tiendagrupo5/admin"><i class="fas fa-tools me-2"></i>Admin Portal</a>
         <div class="d-flex">
-            <a href="/tiendagrupo5/admin" class="btn btn-sm me-3 <?php echo $botonProductoActivo; ?>">
+            <a href="/tiendagrupo5/admin" class="btn btn-sm me-3 <?php echo $botondashboardActivo; ?>">
+                <i class="fas fa-chart-bar me-1"></i>Dashboard
+            </a>
+            <a href="/tiendagrupo5/admin/products" class="btn btn-sm me-3 <?php echo $botonProductoActivo; ?>">
                 <i class="fas fa-box me-1"></i>Productos
             </a>
             <a href="/tiendagrupo5/admin/users" class="btn btn-sm me-3 <?php echo $botonUsuariosActivo; ?>">

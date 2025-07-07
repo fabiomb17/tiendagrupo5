@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../models/Product.php';
 require_once __DIR__ . '/../models/User.php';
 
-// Verificar si el usuario está autenticado y es admin
+// Verificar autenticación y permisos
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -11,16 +11,19 @@ if (!isset($_SESSION['user_id'])) {
 
 $userModel = new User();
 if (!$userModel->isAdmin($_SESSION['user_id'])) {
-    header('Location: ../index.html');
+    header('Location: ../');
     exit;
 }
 
-// Obtener productos usando el modelo
+// Obtener estadísticas
 $productModel = new Product();
 try {
-    $products = $productModel->getAll();
+    $totalProducts = count($productModel->getAll());
+    $totalUsers = count($userModel->getAll());
+    $adminUsers = count(array_filter($userModel->getAll(), function($u) { return $u['role'] === 'admin'; }));
+    $activeUsers = count(array_filter($userModel->getAll(), function($u) { return $u['active'] == 1; }));
 } catch (Exception $e) {
-    $products = [];
+    $totalProducts = $totalUsers = $adminUsers = $activeUsers = 0;
     $error = $e->getMessage();
 }
 
@@ -28,13 +31,13 @@ try {
 $success = $_SESSION['success'] ?? '';
 $error = $_SESSION['error'] ?? $error ?? '';
 unset($_SESSION['success'], $_SESSION['error']);
-
 $menu = 2;
-?>
 
+?>
 <?php include 'menu.php'; ?>
 
 <div class="container">
+    <!-- Mensajes -->
     <?php if ($success): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($success); ?>
@@ -48,315 +51,233 @@ $menu = 2;
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
-    
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4><i class="fas fa-plus-circle me-2"></i>Registrar Producto</h4>
+
+    <!-- Header del Dashboard -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="fas fa-tachometer-alt me-3"></i>Dashboard de Administración</h2>
+                    <p class="text-muted">Panel de control para gestión de la tienda</p>
                 </div>
-                <div class="card-body">
-                    <form method="post" action="register_product.php">
-                        <div class="mb-3">
-                            <label class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" name="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Precio *</label>
-                            <div class="input-group">
-                                <span class="input-group-text">DOP</span>
-                                <input type="number" step="0.01" class="form-control" name="price" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Categoría *</label>
-                            <select class="form-select" name="category" required>
-                                <option value="">Seleccionar categoría</option>
-                                <option value="electronics">Electrónicos</option>
-                                <option value="clothing">Ropa</option>
-                                <option value="home">Hogar</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Imagen (URL o ruta) *</label>
-                            <input type="text" class="form-control" name="image" placeholder="img/producto.png" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Descripción</label>
-                            <textarea class="form-control" name="description" rows="3" placeholder="Descripción del producto (opcional)"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>Registrar Producto
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h4><i class="fas fa-list me-2"></i>Productos Registrados</h4>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($products)): ?>
-                        <div class="text-center py-4 text-muted">
-                            <i class="fas fa-box-open fa-3x mb-3"></i>
-                            <p>No hay productos registrados</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="productsTable">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Precio</th>
-                                        <th>Categoría</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php foreach ($products as $product): ?>
-                                    <tr>
-                                        <td><?php echo $product['id']; ?></td>
-                                        <td><?php echo htmlspecialchars($product['name']); ?></td>
-                                        <td>DOP <?php echo number_format($product['price'], 2); ?></td>
-                                        <td>
-                                            <span class="badge bg-secondary">
-                                                <?php echo ucfirst($product['category']); ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-warning me-1" 
-                                                    onclick="editProduct(<?php echo $product['id']; ?>, '<?php echo addslashes($product['name']); ?>', <?php echo $product['price']; ?>, '<?php echo $product['category']; ?>', '<?php echo addslashes($product['image']); ?>', '<?php echo addslashes($product['description'] ?? ''); ?>')">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-danger" onclick="deleteProduct(<?php echo $product['id']; ?>)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php endif; ?>
+                <div class="text-end">
+                    <small class="text-muted">Última actualización: <?php echo date('d/m/Y H:i'); ?></small>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal para editar producto -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Editar Producto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form id="editForm" method="post" action="edit_product.php">
-                <div class="modal-body">
-                    <input type="hidden" id="editId" name="id">
-                    <div class="mb-3">
-                        <label class="form-label">Nombre *</label>
-                        <input type="text" class="form-control" id="editName" name="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Precio *</label>
-                        <div class="input-group">
-                            <span class="input-group-text">DOP</span>
-                            <input type="number" step="0.01" class="form-control" id="editPrice" name="price" required>
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="fw-bold"><?php echo $totalProducts; ?></h3>
+                            <p class="mb-0">Total Productos</p>
+                            <small class="opacity-75">En el catálogo</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-box stat-icon"></i>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Categoría *</label>
-                        <select class="form-select" id="editCategory" name="category" required>
-                            <option value="electronics">Electrónicos</option>
-                            <option value="clothing">Ropa</option>
-                            <option value="home">Hogar</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Imagen (URL o ruta) *</label>
-                        <input type="text" class="form-control" id="editImage" name="image" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Descripción</label>
-                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                </div>
+                <div class="card-footer bg-primary border-0">
+                    <a href="index.php" class="text-white text-decoration-none">
+                        <small><i class="fas fa-eye me-1"></i>Ver todos los productos</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="fw-bold"><?php echo $totalUsers; ?></h3>
+                            <p class="mb-0">Total Usuarios</p>
+                            <small class="opacity-75">Registrados</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users stat-icon"></i>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <i class="fas fa-times me-2"></i>Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save me-2"></i>Guardar cambios
-                    </button>
+                <div class="card-footer bg-success border-0">
+                    <a href="users.php" class="text-white text-decoration-none">
+                        <small><i class="fas fa-eye me-1"></i>Gestionar usuarios</small>
+                    </a>
                 </div>
-            </form>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card bg-warning text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="fw-bold"><?php echo $adminUsers; ?></h3>
+                            <p class="mb-0">Administradores</p>
+                            <small class="opacity-75">Activos</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-shield stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-warning border-0">
+                    <a href="users.php" class="text-white text-decoration-none">
+                        <small><i class="fas fa-cog me-1"></i>Gestionar permisos</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card dashboard-card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h3 class="fw-bold"><?php echo $activeUsers; ?></h3>
+                            <p class="mb-0">Usuarios Activos</p>
+                            <small class="opacity-75">Habilitados</small>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-check stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-info border-0">
+                    <a href="users.php" class="text-white text-decoration-none">
+                        <small><i class="fas fa-chart-line me-1"></i>Ver actividad</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h4><i class="fas fa-bolt me-2"></i>Acciones Rápidas</h4>
+            <p class="text-muted">Operaciones frecuentes de administración</p>
+        </div>
+        
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card quick-action h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                    <h5>Nuevo Producto</h5>
+                    <p class="text-muted">Agregar producto al catálogo</p>
+                    <a href="products.php" class="btn btn-primary">Crear Producto</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card quick-action h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                    <h5>Nuevo Usuario</h5>
+                    <p class="text-muted">Registrar nuevo usuario</p>
+                    <a href="users.php" class="btn btn-success">Crear Usuario</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card quick-action h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-store fa-3x text-info mb-3"></i>
+                    <h5>Ver Tienda</h5>
+                    <p class="text-muted">Ir a la vista pública</p>
+                    <a href="../" class="btn btn-info text-white">Ir a Tienda</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card quick-action h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-cogs fa-3x text-warning mb-3"></i>
+                    <h5>Configuración</h5>
+                    <p class="text-muted">Ajustes del sistema</p>
+                    <a href="#" class="btn btn-warning text-white">Configurar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del sistema -->
+    <div class="row">
+        <div class="col-md-8 mb-4 pb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle me-2"></i>Información del Sistema</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><strong>Versión:</strong> 2.0 POO</li>
+                                <li><strong>Base de datos:</strong> MySQL</li>
+                                <li><strong>Framework:</strong> Bootstrap 5</li>
+                                <li><strong>PHP:</strong> <?php echo phpversion(); ?></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><strong>Servidor:</strong> <?php echo $_SERVER['SERVER_SOFTWARE'] ?? 'N/A'; ?></li>
+                                <li><strong>Host:</strong> <?php echo $_SERVER['HTTP_HOST']; ?></li>
+                                <li><strong>Última actualización:</strong> <?php echo date('d/m/Y'); ?></li>
+                                <li><strong>Estado:</strong> <span class="badge bg-success">Operativo</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-graduation-cap me-2"></i>Acerca del Proyecto</h5>
+                </div>
+                <div class="card-body">
+                    <p class="small">
+                        <strong>MiTienda Grupo 5</strong><br>
+                        Sistema desarrollado para la Universidad Abierta Para Adultos (UAPA)
+                        como proyecto académico de Desarrollo de Proyectos con Software Libre.
+                    </p>
+                    <p class="small mb-0">
+                        <i class="fas fa-users me-1"></i> Desarrollado por Grupo 5 en año <br>
+                        <i class="fas fa-calendar me-1"></i> <?php echo date('Y'); ?>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-function editProduct(id, name, price, category, image, description = '') {
-    document.getElementById('editId').value = id;
-    document.getElementById('editName').value = name;
-    document.getElementById('editPrice').value = price;
-    document.getElementById('editCategory').value = category;
-    document.getElementById('editImage').value = image;
-    document.getElementById('editDescription').value = description;
-    
-    var modal = new bootstrap.Modal(document.getElementById('editModal'));
-    modal.show();
-}
-
-// Manejar el envío del formulario de edición
-document.getElementById('editForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    
-    fetch('edit_product.php', {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Cerrar el modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-        modal.hide();
-        
-        if (data.success) {
-            // Actualizar la fila en la tabla
-            const productId = formData.get('id');
-            const productName = formData.get('name');
-            const productPrice = parseFloat(formData.get('price'));
-            const productCategory = formData.get('category');
-            const productImage = formData.get('image');
-            const productDescription = formData.get('description') || '';
-            
-            updateProductRow(productId, productName, productPrice, productCategory, productImage, productDescription);
-            
-            // Mostrar mensaje de éxito
-            showNotification(data.message, 'success');
-        } else {
-            // Mostrar mensaje de error
-            showNotification(data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Error al actualizar el producto', 'error');
+// Auto-dismiss alerts después de 5 segundos
+setTimeout(function() {
+    var alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        var bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
     });
-});
+}, 5000);
 
-function updateProductRow(id, name, price, category, image, description) {
-    // Encontrar la fila del producto
-    const rows = document.querySelectorAll('#productsTable tbody tr');
-    rows.forEach(row => {
-        const firstCell = row.querySelector('td:first-child');
-        if (firstCell && firstCell.textContent.trim() == id) {
-            // Mapear categorías a español
-            const categoryMap = {
-                'electronics': 'Electrónicos',
-                'clothing': 'Ropa',
-                'home': 'Hogar'
-            };
-            
-            // Actualizar las celdas de la fila
-            row.querySelector('td:nth-child(2)').textContent = name;
-            row.querySelector('td:nth-child(3)').textContent = 'DOP ' + price.toFixed(2);
-            row.querySelector('td:nth-child(4) .badge').textContent = categoryMap[category] || category;
-            
-            // Actualizar el botón de editar con los nuevos datos
-            const editButton = row.querySelector('.btn-warning');
-            if (editButton) {
-                // Escapar comillas simples para JavaScript
-                const escapedName = name.replace(/'/g, "\\'");
-                const escapedImage = image.replace(/'/g, "\\'");
-                const escapedDescription = description.replace(/'/g, "\\'");
-                
-                editButton.setAttribute('onclick', 
-                    `editProduct(${id}, '${escapedName}', ${price}, '${category}', '${escapedImage}', '${escapedDescription}')`
-                );
-            }
-        }
-    });
-}
-
-function deleteProduct(id) {
-    if (confirm('¿Estás seguro de que quieres eliminar este producto?\n\nEsta acción no se puede deshacer.')) {
-        // Crear un formulario oculto para enviar la solicitud de eliminación
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = 'delete_product.php';
-        
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'id';
-        input.value = id;
-        
-        form.appendChild(input);
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-
-// Mostrar notificaciones
-<?php if (!empty($success)): ?>
-    showNotification('<?php echo $success; ?>', 'success');
-<?php endif; ?>
-
-<?php if (!empty($error)): ?>
-    showNotification('<?php echo $error; ?>', 'error');
-<?php endif; ?>
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = 'position-fixed top-0 end-0 p-3';
-    notification.style.zIndex = '1100';
-    
-    const bgColor = type === 'success' ? 'bg-success' : 
-                   type === 'error' ? 'bg-danger' : 
-                   type === 'warning' ? 'bg-warning' : 'bg-info';
-    
-    notification.innerHTML = `
-        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header ${bgColor} text-white">
-                <strong class="me-auto">${type === 'error' ? 'Error' : 'Notificación'}</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                ${message}
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Eliminar la notificación después de 4 segundos
-    setTimeout(() => {
-        notification.querySelector('.toast').classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 4000);
-    
-    // Permitir cerrar la notificación manualmente
-    notification.querySelector('.btn-close').addEventListener('click', function() {
-        notification.querySelector('.toast').classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    });
-}
+// Actualizar hora cada minuto
+setInterval(function() {
+    var now = new Date();
+    var timeString = now.toLocaleString('es-ES');
+    document.querySelector('.text-muted small').textContent = 'Última actualización: ' + timeString;
+}, 60000);
 </script>
 </body>
 </html>
