@@ -84,7 +84,7 @@ $menu = 2;
                     </div>
                 </div>
                 <div class="card-footer bg-primary border-0">
-                    <a href="index.php" class="text-white text-decoration-none">
+                    <a href="products.php" class="text-white text-decoration-none">
                         <small><i class="fas fa-eye me-1"></i>Ver todos los productos</small>
                     </a>
                 </div>
