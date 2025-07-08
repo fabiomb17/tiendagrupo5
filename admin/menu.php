@@ -31,10 +31,10 @@ if ($menu == 1) {
             <a href="/tiendagrupo5/admin" class="btn btn-sm me-3 <?php echo $botondashboardActivo; ?>">
                 <i class="fas fa-chart-bar me-1"></i>Dashboard
             </a>
-            <a href="/tiendagrupo5/admin/products" class="btn btn-sm me-3 <?php echo $botonProductoActivo; ?>">
+            <a href="/tiendagrupo5/admin/products.php" class="btn btn-sm me-3 <?php echo $botonProductoActivo; ?>">
                 <i class="fas fa-box me-1"></i>Productos
             </a>
-            <a href="/tiendagrupo5/admin/users" class="btn btn-sm me-3 <?php echo $botonUsuariosActivo; ?>">
+            <a href="/tiendagrupo5/admin/users.php" class="btn btn-sm me-3 <?php echo $botonUsuariosActivo; ?>">
                 <i class="fas fa-users me-1"></i>Usuarios
             </a>
             <a href="/tiendagrupo5" class="btn btn-outline-secondary btn-sm me-3">
