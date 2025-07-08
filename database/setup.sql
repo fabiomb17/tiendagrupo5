@@ -1,5 +1,5 @@
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS tiendagrupo5 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS tiendagrupo5 CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 USE tiendagrupo5;
 
@@ -79,10 +79,11 @@ INSERT INTO users (username, email, password, role) VALUES
 -- Contraseña: password
 
 -- Insertar productos base
-INSERT INTO products (name, description, price, category, image) VALUES 
-('Smartphone X', 'Teléfono inteligente de última generación con pantalla OLED', 55.02, 'electronics', 'img/smartphone.png'),
-('Laptop Pro', 'Laptop profesional para trabajo y gaming', 1200.99, 'electronics', 'img/laptop.png'),
-('Camisa Casual', 'Camisa cómoda para uso diario', 25.50, 'clothing', 'img/camisa.png'),
-('Sofá Moderno', 'Sofá cómodo y elegante para el hogar', 599.99, 'home', 'img/sofa.png'),
-('Auriculares Inalámbricos', 'Auriculares Bluetooth con cancelación de ruido', 89.99, 'electronics', 'img/auriculares.png'),
-('Mesa de Centro', 'Mesa moderna para sala de estar', 150.00, 'home', 'img/mesa.png');
+INSERT INTO `products` (`name`, `description`, `price`, `category`, `image`, `active`, `created_at`, `updated_at`) VALUES
+('Smartphone X', 'Teléfono inteligente de última generación con pantalla OLED', '10000.00', 'electronics', 'img/smartphone.png', 1, '2025-07-07 16:16:10', '2025-07-07 17:19:48'),
+('Laptop Pro', 'Laptop profesional para trabajo y gaming', '25000.00', 'electronics', 'img/laptop.png', 1, '2025-07-07 16:16:10', '2025-07-07 22:37:05'),
+('Camisa Casual', 'Camisa cómoda para uso diario', '1500.00', 'clothing', 'img/camisa.png', 1, '2025-07-07 16:16:10', '2025-07-07 22:37:24'),
+('Sofá Moderno', 'Sofá cómodo y elegante para el hogar', '599.99', 'home', 'img/sofa.png', 1, '2025-07-07 16:16:10', '2025-07-07 16:16:10'),
+('Auriculares Inalámbricos', 'Auriculares Bluetooth con cancelación de ruido', '89.99', 'electronics', 'img/auriculares.png', 1, '2025-07-07 16:16:10', '2025-07-07 16:16:10'),
+('Mesa de Centro', 'Mesa moderna para sala de estar', '150.00', 'home', 'img/mesa.png', 1, '2025-07-07 16:16:10', '2025-07-07 16:16:10'),
+('Alarma', 'fdafdfasd', '20000.00', 'electronics', 'img/auriculares.png', 0, '2025-07-07 19:08:08', '2025-07-07 19:16:28');
